@@ -1,8 +1,11 @@
 class Player
 {
-    constructor(sprite, x, y)
+    constructor(x, y)
     {
-        this.sprite = loadImage("assets/"+sprite+".png");
+        this.sprites = {
+            idle: loadImage("assets/")
+        }
+
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
         this.acc = createVector(0, g);
@@ -14,6 +17,15 @@ class Player
         this.specialAttack = 5;
         this.specialDefense = 5;
         this.speed = 5;
+
+        this.jumpPower = -20;
+
+        this.isBlockingRight = false;
+        this.isBlockingLeft = false;
+        this.onGround = false;
+        this.isJumping = false;
+
+        this.state = "idle";
     }
 
     draw()
@@ -21,32 +33,113 @@ class Player
         push();
         translate(this.pos.x, this.pos.y)
         scale(this.direction, 1)
-        image(this.sprite, 0, 0, 128, 128);
+        imageMode(CENTER);
+        textAlign(CENTER);
+        textSize(25);
+        image(this.sprites[this.state], 0, 0, 128, 128);
+        scale(this.direction, 1)
+        text(this.state, 0, -68);
         pop();
     }
 
     update()
     {
-        this.vel.x = (this.right - this.left) * this.speed;
-        this.vel.add(this.acc);
+        if(!this.isBlocking || !this.isBlockingLeft)
+            {
+                this.vel.x = (this.right - this.left) * this.speed;
+            }
+
+        if(!this.onGround)
+        {
+            this.vel.add(this.acc);
+        }
+        else
+        {
+            this.vel.y = 0;
+        }
         this.pos.add(this.vel);
+        this.pos.x = constrain(this.pos.x, 64, width-64);
+
+        this.stateHandler();
+
+        this.reachedGround();
+    }
+
+    stateHandler()
+    {
+        if(this.vel.y > 0)
+        {
+            this.isJumping = false;
+        }
+    
+        if(!this.isJumping && !this.onGround)
+        {
+            this.state = "fall";
+        }
+        else if(this.isJumping && !this.onGround)
+        {
+            this.state = "jump";
+        }
+        else
+        {
+            if(this.right - this.left == 0)
+            {
+                this.state = "idle";
+            }
+            else
+            {
+                this.state = "run";
+            }
+        }
+    }
+
+    reachedGround(groundLevel = height - 64) {
+        if (this.pos.y >= groundLevel) {
+            this.pos.y = groundLevel;
+            this.onGround = true;
+            this.vel.y = 0;
+        } else {
+            this.onGround = false;
+        }
     }
 
     WalkLeft(value=1)
     {
+        if(this.isBlockingLeft)
+        {
+            value = 0;
+        }
+
         this.left = value
-        if(value !== 1)
-            {
-                this.direction = -1;
-            }
+        if(value !== 0)
+        {
+            this.direction = -1;
+        }
     }
 
     WalkRight(value=1)
     {
+        if(this.isBlockingRight)
+        {
+            value = 0;
+        }
+
         this.right = value
-        if(value !== 1)
+        if(value !== 0)
+        {
+            this.direction = 1;
+        }
+    }
+
+    Jump()
+    {
+        console.log("fired")
+        if(this.onGround)
             {
-                this.direction = 1;
+                console.log("jumped")
+                this.isJumping = true;
+                this.vel.y = this.jumpPower;
+                this.onGround = false;
             }
     }
 
@@ -57,7 +150,12 @@ class WhiteCharacter extends Player
     constructor(sprite, x, y)
     {
         super();
-        this.sprite = loadImage("assets/"+sprite+".png");
+        this.sprites = {
+            idle: loadImage("assets/Yuji_idle.gif"),
+            run: loadImage("assets/Yuji_Run_1.gif"),
+            jump: loadImage("assets/chibi gojo.png"),
+            fall: loadImage("assets/huh3.png"),
+        }
         this.pos = createVector(x, y);
         this.attack = 5;
         this.defense = 5;
@@ -68,6 +166,9 @@ class WhiteCharacter extends Player
         this.Combo = 0;
         this.CombatDebounce = false
         this.ComboCooldown = 1;
+
+        this.state = "idle";
+
     }
 
     async Combat()
