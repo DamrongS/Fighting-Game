@@ -110,7 +110,7 @@ class Player
             value = 0;
         }
 
-        this.left = value
+        this.left = value;
         if(value !== 0)
         {
             this.direction = -1;
@@ -124,7 +124,7 @@ class Player
             value = 0;
         }
 
-        this.right = value
+        this.right = value;
         if(value !== 0)
         {
             this.direction = 1;
@@ -179,13 +179,13 @@ class WhiteCharacter extends Player
 
         if(this.Combo > 5)
             {
-                this.Combo = 1
+                this.Combo = 1;
             }
 
         console.log(this.Combo);
         
-        await wait(this.ComboCooldown)
-        this.CombatDebounce = false
+        await wait(this.ComboCooldown);
+        this.CombatDebounce = false;
     }
 
 }

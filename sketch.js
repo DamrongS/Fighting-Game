@@ -8,6 +8,8 @@ let menuDivs = [];
 let menuInitialized = false;
 let characterSelectionMenuInitialized = false;
 
+let menuPlaylist = [];
+
 let PlayableCharacters = [
   "WhiteCharacter",
 ];
@@ -21,6 +23,12 @@ function statesSetup()
     Menu,
     Game,
   }
+}
+
+let streetFighterFont;
+
+function preload() {
+  streetFighterFont = loadFont('assets/Martyric_PersonalUse.ttf');
 }
 
 async function setup() 
@@ -46,13 +54,41 @@ function Menu()
       menuDivs[0] = createP("Menu Title");
       menuDivs[0].position(width/15, height/1.4);
       menuDivs[0].style('font-size', '64px');
+      menuDivs[0].style('font-family', 'StreetFigtherFont');
+      menuDivs[0].style('display', 'flex');
+      menuDivs[0].style('justify-content', 'center');
+      menuDivs[0].style('color', 'orange');
 
-      menuButtons[0] = createButton("Play Locally");
-      menuButtons[0].position(width/3, height/2)
+      menuButtons[0] = createButton("Campaign");
+      menuButtons[0].position(width/3, height/3)
+      menuButtons[0].style('font-size', '28px');
+      menuButtons[0].style('font-family', 'StreetFigtherFont');
+      menuButtons[0].style('display', 'flex');
+      menuButtons[0].style('justify-content', 'center');
+
+      menuButtons[1] = createButton("Play Locally");
+      menuButtons[1].position((width/3) - (width/3)/20, height/2.2)
+      menuButtons[1].style('font-size', '28px');
+      menuButtons[1].style('font-family', 'StreetFigtherFont');
+
+      menuButtons[2] = createButton("Multiplayer (W.I.P)");
+      menuButtons[2].position((width/3) - (width/3)/6.5, height/1.74)
+      menuButtons[2].style('font-size', '28px');
+      menuButtons[2].style('font-family', 'StreetFigtherFont');
+
+      menuButtons[3] = createButton("Settings");
+      menuButtons[3].position((width/3) - (width/3)/6, height/1.44)
+      menuButtons[3].style('font-size', '28px');
+      menuButtons[3].style('font-family', 'StreetFigtherFont');
+
+      menuButtons[4] = createButton("Credits");
+      menuButtons[4].position((width/2.1) - (width/3)/6, height/1.44)
+      menuButtons[4].style('font-size', '28px');
+      menuButtons[4].style('font-family', 'StreetFigtherFont');
 
       for(let button of menuButtons)
         {
-          button.class("button-48");
+          button.class("standardButton");
         }
 
       menuInitialized = true;
