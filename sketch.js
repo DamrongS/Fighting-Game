@@ -10,10 +10,13 @@ let charactersButtonOther = [];
 
 let charactersButtonMultiplayer = [];
 
+let settingsUI = [];
+
 //Control variables
 let menuInitialized = false;
 let characterSelectionMenuInitialized = false;
 let gameStarted = false;
+let settingsInitialized = false;
 
 //music playlists
 let menuPlaylist = [];
@@ -45,6 +48,8 @@ function statesSetup()
   states = {
     Menu,
     Game,
+    Settings,
+    Credits,
   }
 
 }
@@ -55,8 +60,6 @@ function gameModesSetup()
     Campaign,
     LocalPlay,
     Multiplayer,
-    Settings,
-    Credits,
   }
 
 }
@@ -79,8 +82,53 @@ let characterImages = [];
 
 //sounds
 
+let playlistManager = {
+  currentTrackIndex: 0,
+  tracks: [],
+  volume: 1.0,
+  
+  // Add a track to the playlist
+  addTrack: function (trackPath) {
+    let track = loadSound(trackPath, () => {
+      track.onended(() => this.nextTrack());
+      track.setVolume(this.volume);
+    });
+    this.tracks.push(track);
+  },
+  
+  // Play the current track
+  play: function () {
+    if (this.tracks.length > 0) {
+      this.tracks[this.currentTrackIndex].play();
+    }
+  },
+  
+  // Stop the current track
+  stop: function () {
+    if (this.tracks.length > 0) {
+      this.tracks[this.currentTrackIndex].stop();
+    }
+  },
+  
+  // Move to the next track and play it
+  nextTrack: function () {
+    this.stop();
+    this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
+    this.play();
+  },
+
+  setVolume: function (vol) {
+    this.volume = vol;
+    for (let track of this.tracks) {
+      track.setVolume(this.volume);
+    }
+  }
+};
+
 function preload() {
   streetFighterFont = loadFont('assets/Martyric_PersonalUse.ttf');
+
+  playlistManager.addTrack("sounds/boss.wav");
 }
 
 async function setup() 
@@ -90,6 +138,8 @@ async function setup()
   gameModesSetup();
   characterClassesSetup();
   tester = new WhiteCharacter("chibi gojo", 200, 200)
+
+  playlistManager.play();
 }
 
 async function draw() 
@@ -175,7 +225,9 @@ async function Menu()
       menuButtons[3].style('font-size', '28px');
       menuButtons[3].style('font-family', 'StreetFigtherFont');
       menuButtons[3].mousePressed(() => {
-        buttonNo(3);
+        state = "Settings";
+        gameStarted = false;
+        console.log(state, gameMode, gameStarted);
       });
 
       menuButtons[4] = createButton("Credits");
@@ -269,7 +321,69 @@ async function Multiplayer()
 
 async function Settings()
 {
-  console.log("Sorry no");
+  background(120);
+  showMenuHTML(false);
+  if(!settingsInitialized)
+  {
+    settingsUI[0] = createButton("X")
+    settingsUI[0].position(0, 0)
+    settingsUI[0].size(50, 50)
+    settingsUI[0].style('font-size', '28px');
+    settingsUI[0].style('font-family', 'StreetFigtherFont');
+    settingsUI[0].class("standardButton");
+    settingsUI[0].mousePressed(() => {
+      state = "Menu";
+      for(let UI of settingsUI)
+      {
+        UI.hide();
+      }
+      settingsUI[0].hide();
+    });
+
+    settingsUI[1] = createP("Settings")
+    settingsUI[1].position((width/2) - 140, height/15);
+    settingsUI[1].style('font-size', '64px');
+    settingsUI[1].style('font-family', 'StreetFigtherFont');
+    settingsUI[1].style('display', 'flex');
+    settingsUI[1].style('justify-content', 'center');
+    settingsUI[1].style('color', 'orange');
+
+    settingsUI[2] = createP("Music")
+    settingsUI[2].position((width/2) - 140, height/4);
+    settingsUI[2].style('font-size', '32px');
+    settingsUI[2].style('font-family', 'StreetFigtherFont');
+    settingsUI[2].style('display', 'flex');
+    settingsUI[2].style('justify-content', 'center');
+    settingsUI[2].style('color', 'orange');
+
+    settingsUI[3] = createSlider(0, 1, 1, 0.01);
+    settingsUI[3].position((width/2) - 140, height/2.8);
+    settingsUI[3].input(() => {
+      playlistManager.setVolume(settingsUI[3].value());
+    });
+
+    settingsUI[4] = createP("Sound Effects")
+    settingsUI[4].position((width/2) - 140, height/2.6);
+    settingsUI[4].style('font-size', '32px');
+    settingsUI[4].style('font-family', 'StreetFigtherFont');
+    settingsUI[4].style('display', 'flex');
+    settingsUI[4].style('justify-content', 'center');
+    settingsUI[4].style('color', 'orange');
+
+    settingsUI[5] = createSlider(0, 1, 1, 0.01);
+    settingsUI[5].position((width/2) - 140, height/2);
+    settingsUI[5].input(() => {
+
+    });
+
+    settingsInitialized = true
+  }
+
+  for(let UI of settingsUI)
+  {
+    UI.show();
+  }
+
 }
 
 async function Credits()
@@ -284,12 +398,18 @@ function Game() {
     if (typeof gameModes[gameMode] === 'function')
     {
       gameModes[gameMode]();
+      console.log(gameMode)
     } 
     else
     {
       console.error(`No function found for game mode: ${gameMode}`);
     }
   }
+}
+
+function Playlist()
+{
+
 }
 
 function keyPressed()
