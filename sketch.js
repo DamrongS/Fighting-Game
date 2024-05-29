@@ -5,6 +5,11 @@ let g = 0.982;
 let menuButtons = [];
 let menuDivs = [];
 
+let charactersButton = [];
+let charactersButtonOther = [];
+
+let charactersButtonMultiplayer = [];
+
 //Control variables
 let menuInitialized = false;
 let characterSelectionMenuInitialized = false;
@@ -16,7 +21,11 @@ let menuPlaylist = [];
 //in game display arrays
 let PlayableCharacters = [
   "WhiteCharacter",
+  "chibi gojo",
+  "huh3",
 ];
+
+let characterClasses;
 
 //string variables
 let states;
@@ -24,6 +33,12 @@ let state = "Menu";
 
 let gameModes;
 let gameMode = "";
+
+let LocalPlayer1;
+let LocalPlayer2;
+
+let MultiplayerPlayer1;
+let MultiplayerPlayer2;
 
 function statesSetup()
 {
@@ -46,10 +61,21 @@ function gameModesSetup()
 
 }
 
+function characterClassesSetup()
+{
+  characterClasses = {
+    WhiteCharacter: WhiteCharacter,
+    chibi_gojo: WhiteCharacter,
+    huh3: WhiteCharacter,
+  };
+
+}
+
 //fonts
 let streetFighterFont;
 
 //images
+let characterImages = [];
 
 //sounds
 
@@ -62,6 +88,7 @@ async function setup()
   createCanvas(1200, 800);
   statesSetup();
   gameModesSetup();
+  characterClassesSetup();
   tester = new WhiteCharacter("chibi gojo", 200, 200)
 }
 
@@ -131,7 +158,7 @@ async function Menu()
       menuButtons[1].mousePressed(() => {
         gameMode = "LocalPlay";
         state = "Game";
-        gameStarted = true;
+        gameStarted = false;
         console.log(state, gameMode, gameStarted);
       });
 
@@ -193,6 +220,45 @@ async function LocalPlay()
   {
     tester.draw();
     tester.update();
+  }
+  else if(!gameStarted)
+  {
+    if(!characterSelectionMenuInitialized)
+      {
+        for(let i = 0; i < PlayableCharacters.length; i++)
+          {
+            charactersButton[i] = createButton("");
+            charactersButton[i].size(50, 50)
+            charactersButton[i].position(50 + i*50, 250);
+            charactersButton[i].style('background', `url(assets/${PlayableCharacters[i]}.png) no-repeat center center`);
+            charactersButton[i].style('background-size', 'cover');
+            charactersButton[i].mousePressed(() => {
+              console.log(PlayableCharacters[i]);
+              let charClass = characterClasses[PlayableCharacters[i]];
+              LocalPlayer1 = new charClass(50 + i * 50, 250);
+            })
+          }
+
+        for(let i = 0; i < PlayableCharacters.length; i++)
+          {
+            charactersButtonOther[i] = createButton("");
+            charactersButtonOther[i].size(50, 50)
+            charactersButtonOther[i].position((width-100) - i*50, 250);
+            charactersButtonOther[i].style('background', `url(assets/${PlayableCharacters[i]}.png) no-repeat center center`);
+            charactersButtonOther[i].style('background-size', 'cover');
+            charactersButtonOther[i].mousePressed(() => {
+              console.log(PlayableCharacters[i]);
+              let charClass = characterClasses[PlayableCharacters[i]];
+              LocalPlayer2 = new charClass((width - 100) - i * 50, 250);
+            })
+          }
+
+          characterSelectionMenuInitialized = true
+      }
+    else
+    {
+
+    }
   }
 }
 
