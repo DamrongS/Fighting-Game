@@ -85,6 +85,7 @@ let characterImages = [];
 let playlistManager = {
   currentTrackIndex: 0,
   tracks: [],
+  trackPaths: [],
   volume: 1.0,
   
   // Add a track to the playlist
@@ -94,11 +95,13 @@ let playlistManager = {
       track.setVolume(this.volume);
     });
     this.tracks.push(track);
+    this.trackPaths.push(trackPath);
   },
   
   // Play the current track
   play: function () {
     if (this.tracks.length > 0) {
+      console.log("Playing " + this.getCurrentTrackPath().replace("sounds/", "") + " Next...");
       this.tracks[this.currentTrackIndex].play();
     }
   },
@@ -122,6 +125,27 @@ let playlistManager = {
     for (let track of this.tracks) {
       track.setVolume(this.volume);
     }
+  },
+
+  shuffle: function () {
+    //this.stop();
+    this.tracks = this.shuffleArray(this.tracks);
+    this.trackPaths = this.shuffleArray(this.trackPaths);
+    this.currentTrackIndex = 0;
+    //this.play();
+  },
+
+  // Helper function to shuffle an array
+  shuffleArray: function (array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  },
+
+  getCurrentTrackPath: function () {
+    return this.trackPaths[this.currentTrackIndex];
   }
 };
 
@@ -129,6 +153,20 @@ function preload() {
   streetFighterFont = loadFont('assets/Martyric_PersonalUse.ttf');
 
   playlistManager.addTrack("sounds/boss.wav");
+  playlistManager.addTrack("sounds/brah.mp3");
+  playlistManager.addTrack("sounds/Cart Rush.mp3");
+  playlistManager.addTrack("sounds/dominants.wav");
+  playlistManager.addTrack("sounds/emilyjazzstandard.wav");
+  playlistManager.addTrack("sounds/funky trap beat.mp3");
+  playlistManager.addTrack("sounds/jeg er stewie wonder.mp3");
+  playlistManager.addTrack("sounds/Market Chaos.mp3");
+  playlistManager.addTrack("sounds/morecookn.wav");
+  playlistManager.addTrack("sounds/release cut pano.mp3");
+  playlistManager.addTrack("sounds/remastered verson 3.mp3");
+  playlistManager.addTrack("sounds/Run..mp3");
+  playlistManager.addTrack("sounds/themonkeyman.mp3");
+  playlistManager.addTrack("sounds/undertalesmthn.wav");
+  playlistManager.addTrack("sounds/We cooked.mp3");
 }
 
 async function setup() 
@@ -139,6 +177,9 @@ async function setup()
   characterClassesSetup();
   tester = new WhiteCharacter("chibi gojo", 200, 200)
 
+  playlistManager.shuffle();
+
+  playlistManager.stop();
   playlistManager.play();
 }
 
@@ -427,13 +468,14 @@ function keyPressed()
     tester.WalkRight();
   }
   if(keyCode == UP_ARROW)
-    {
-      tester.Jump();
-    }
+  {
+    tester.Jump();
+  }
   if(key == "f")
-    {
-      state = "Game";
-    }
+  {
+    state = "Game";
+  }
+  //console.log(keyCode);
 }
 
 function keyReleased()
