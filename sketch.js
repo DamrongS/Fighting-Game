@@ -502,7 +502,9 @@ function keyPressed()
   }
   if(key == "f")
   {
+    gameMode = "LocalPlay";
     state = "Game";
+    gameStarted = true;
   }
   //console.log(keyCode);
 }

@@ -49,6 +49,11 @@ class Player
                 this.vel.x = (this.right - this.left) * this.speed;
             }
 
+        if((this.right - this.left) !== 0)
+            {
+                this.direction = (this.right - this.left);
+            }
+
         if(!this.onGround)
         {
             this.vel.add(this.acc);
@@ -72,21 +77,21 @@ class Player
             this.isJumping = false;
         }
     
-        if(!this.isJumping && !this.onGround)
+        if(!this.isJumping && !this.onGround && !this.state.includes("combo"))
         {
             this.state = "fall";
         }
-        else if(this.isJumping && !this.onGround)
+        else if(this.isJumping && !this.onGround && !this.state.includes("combo"))
         {
             this.state = "jump";
         }
         else
         {
-            if(this.right - this.left == 0)
+            if(this.right - this.left == 0 && !this.state.includes("combo"))
             {
                 this.state = "idle";
             }
-            else
+            else if(this.right - this.left !== 0 && !this.state.includes("combo"))
             {
                 this.state = "run";
             }
@@ -111,10 +116,6 @@ class Player
         }
 
         this.left = value;
-        if(value !== 0)
-        {
-            this.direction = -1;
-        }
     }
 
     WalkRight(value=1)
@@ -125,10 +126,6 @@ class Player
         }
 
         this.right = value;
-        if(value !== 0)
-        {
-            this.direction = 1;
-        }
     }
 
     Jump()
@@ -151,10 +148,15 @@ class WhiteCharacter extends Player
     {
         super();
         this.sprites = {
-            idle: loadImage("assets/Yuji_idle.gif"),
-            run: loadImage("assets/Yuji_Run_1.gif"),
-            jump: loadImage("assets/chibi gojo.png"),
-            fall: loadImage("assets/huh3.png"),
+            idle: loadImage("assets/testIdle.gif"),
+            run: loadImage("assets/testRun.gif"),
+            jump: loadImage("assets/testJump.gif"),
+            fall: loadImage("assets/testFall.gif"),
+            combo1: loadImage("assets/huh3.png"),
+            combo2: loadImage("assets/chibi gojo.png"),
+            combo3: loadImage("assets/WhiteCharacter.png"),
+            combo4: loadImage("assets/huh3.gif"),
+            combo5: loadImage("assets/huh3.gif"),
         }
         this.pos = createVector(x, y);
         this.attack = 5;
@@ -177,15 +179,43 @@ class WhiteCharacter extends Player
         this.CombatDebounce = true;
         this.Combo++;
 
+        this.speed = 0;
+
         if(this.Combo > 5)
             {
                 this.Combo = 1;
             }
 
+        this.state = "combo"+this.Combo;
+
         console.log(this.Combo);
         
+        await wait(0.2);
+        this.speed = 5;
+        if(!this.isJumping && !this.onGround)
+            {
+                this.state = "fall";
+            }
+            else if(this.isJumping && !this.onGround)
+            {
+                this.state = "jump";
+            }
+            else
+            {
+                if(this.right - this.left == 0)
+                {
+                    this.state = "idle";
+                }
+                else if(this.right - this.left !== 0)
+                {
+                    this.state = "run";
+                }
+            }
+
         await wait(this.ComboCooldown);
         this.CombatDebounce = false;
+
     }
+    
 
 }
