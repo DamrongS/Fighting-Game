@@ -79,6 +79,7 @@ let streetFighterFont;
 
 //images
 let characterImages = [];
+let clouds = [];
 
 //sounds
 
@@ -175,6 +176,12 @@ async function setup()
   statesSetup();
   gameModesSetup();
   characterClassesSetup();
+
+  for(let i = 0; i < 10; i++)
+    {
+      clouds[i] = new Cloud(random(0, width), random(0, height), 0)
+    }
+
   tester = new WhiteCharacter("chibi gojo", 200, 200)
 
   playlistManager.shuffle();
@@ -222,6 +229,13 @@ function showMenuHTML(show=true)
 async function Menu()
 {
   background(120);
+
+  for(let i = 0; i < clouds.length-1; i++)
+    {
+      clouds[i].draw();
+      clouds[i].update();
+    }
+
   if(!menuInitialized)
     {
       menuDivs[0] = createP("Menu Title");
@@ -397,10 +411,18 @@ async function Settings()
     settingsUI[2].style('justify-content', 'center');
     settingsUI[2].style('color', 'orange');
 
+    settingsUI[6] = createP("100%")
+    settingsUI[6].position((width/2), height/4);
+    settingsUI[6].style('font-size', '32px');
+    settingsUI[6].style('display', 'flex');
+    settingsUI[6].style('justify-content', 'center');
+    settingsUI[6].style('color', 'black');
+
     settingsUI[3] = createSlider(0, 1, 1, 0.01);
     settingsUI[3].position((width/2) - 140, height/2.8);
     settingsUI[3].input(() => {
       playlistManager.setVolume(settingsUI[3].value());
+      settingsUI[6].html(round(settingsUI[3].value() * 100)+"%", 0);
     });
 
     settingsUI[4] = createP("Sound Effects")
@@ -411,10 +433,17 @@ async function Settings()
     settingsUI[4].style('justify-content', 'center');
     settingsUI[4].style('color', 'orange');
 
+    settingsUI[7] = createP("100%")
+    settingsUI[7].position((width/2) + 60, height/2.6);
+    settingsUI[7].style('font-size', '32px');
+    settingsUI[7].style('display', 'flex');
+    settingsUI[7].style('justify-content', 'center');
+    settingsUI[7].style('color', 'black');
+
     settingsUI[5] = createSlider(0, 1, 1, 0.01);
     settingsUI[5].position((width/2) - 140, height/2);
     settingsUI[5].input(() => {
-
+      settingsUI[7].html(round(settingsUI[5].value() * 100)+"%", 0);
     });
 
     settingsInitialized = true
